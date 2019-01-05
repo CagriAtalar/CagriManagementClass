@@ -1,0 +1,10 @@
+[Unit]
+Description=Sýnýf Yönetim istemci
+
+[Service]
+ExecStart=/usr/bin/python3 /root/./istemci.py
+StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target
+Alias=istemci.service
