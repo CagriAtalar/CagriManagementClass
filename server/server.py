@@ -43,10 +43,12 @@ def socket_olustur():##Socket oluşturmak için gerekli fonksiyon
         if addr[0] in a:
             msg = "Bu makine zaten bağlı... {}".format(addr)
             allentry.insert(END,msg)
+            continue
         else:    ##Bağlantıları kabul ediyoruz
             sock_liste.append(Istemci(clis,addr))##gelen socket nesnelerini bir listeye atıyoruz 
             sr = "Bağlandı : ", addr ,"\n"##Ve bağlandıklarına dair mesajı ekrana basıyoruz
             allentry.insert(END,sr)
+            continue
 
 def listele():
     global sock_liste##Bağlantıları listelemek için bir fonksiyon
