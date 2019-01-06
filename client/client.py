@@ -1,4 +1,4 @@
-#/usr/bin/python3 
+#/usr/bin/env python3
 from subprocess import *
 import socket
 from threading import Thread #Gerekli modüller içeri aktraıldı
