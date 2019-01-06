@@ -9,12 +9,15 @@ from PIL import ImageTk,Image
 global sock_liste
 sock_liste = []
 
-
 class Istemci():#Gelen bağlantıları sınıf olarak bir listeye atıyoruz
     def __init__(self,sock,ip):
         self.sock = sock
         self.ip = ip
-
+def elemanlar():
+    eleman = []
+    for i in sock_liste:
+        eleman.append(i.ip[0])
+    return eleman
 
 def IPal(parser):
     parser.read("sunucu.inf")
@@ -33,10 +36,17 @@ def socket_olustur():##Socket oluşturmak için gerekli fonksiyon
     s.bind((HOST,PORT))##dinlemeye başlıyoruz
     s.listen(400)##max kullanıcı sayısını belirliyoruz
     while True:
-        clis , addr = s.accept()##Bağlantıları kabul ediyoruz
-        sock_liste.append(Istemci(clis,addr))##gelen socket nesnelerini bir listeye atıyoruz 
-        sr = "Bağlandı : ", addr ,"\n"##Ve bağlandıklarına dair mesajı ekrana basıyoruz
-        allentry.insert(END,sr)
+        clis , addr = s.accept()
+        a = elemanlar()
+        print(a)
+        print(addr[0])
+        if addr[0] in a:
+            msg = "Bu makine zaten bağlı... {}".format(addr)
+            allentry.insert(END,msg)
+        else:    ##Bağlantıları kabul ediyoruz
+            sock_liste.append(Istemci(clis,addr))##gelen socket nesnelerini bir listeye atıyoruz 
+            sr = "Bağlandı : ", addr ,"\n"##Ve bağlandıklarına dair mesajı ekrana basıyoruz
+            allentry.insert(END,sr)
 
 def listele():
     global sock_liste##Bağlantıları listelemek için bir fonksiyon
@@ -94,6 +104,9 @@ def secGonder(sock,ip,num,com):##Özel olarak komut gönderme fonksiyonu
         elif "apt" in com:
             try:
                 sock.send(com.encode('utf-8'))##Eğer kurulum yapılmak isteniyorsa geri veri alınmıyor hata il karşılaşınca da listeden siliniyor
+                cli_recv = sock.recv(1024).decode('ISO-8859-1')
+                f = "{}> {}\n".format(ip[0],cli_recv)
+                allentry.insert(END,f)
                 break
             except:
                 del sock_liste[num]
@@ -124,7 +137,9 @@ def ana_menu():##ana_menu fonksiyonu
         target = int(data[1])
         target_sock = sock_liste[target].sock
         target_ip = sock_liste[target].ip
-        secGonder(target_sock,target_ip,target,data[2])
+        t3 = Thread(target = secGonder,args=(target_sock,target_ip,target,data[2]))
+        t3.start()
+    
         
     else:#hiç bir şey değilse uyarı mesajı gidiyor.
         allentry.insert(END,"Başka bir şey deneyin...\n")
